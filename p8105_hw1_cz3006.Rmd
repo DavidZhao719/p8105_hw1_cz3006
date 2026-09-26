@@ -7,4 +7,46 @@ output: github_document
 
 # Problem 1
 
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+data("penguins", package = "palmerpenguins")
+```
+The `penguins` dataset contains data on penguins, including species, island, bill length, bill depth, flipper length, body mass, sex, and year. The species included in the dataset are `r paste(unique(penguins$species), collapse = ", ")`. The dataset contains `r nrow(penguins)` observations and `r ncol(penguins)` variables. The mean flipper length is `r round(mean(penguins$flipper_length_mm, na.rm = TRUE), 2)` mm.
+```{r}
+ggplot(penguins, aes(x = bill_length_mm, 
+                     y = flipper_length_mm, 
+                     color = species)) +
+  geom_point()
+
+ggsave("penguins_scatterplot.png")
+```
 # Problem 2
+```{r}
+problem2_df = tibble(
+  random_sample = rnorm(10),
+  logical_vector = random_sample > 0,
+  character_vector = c("a", "b", "c", "d", "e",
+                       "f", "g", "h", "i", "j"),
+  factor_vector = factor(c("A", "B", "C", "A", "B",
+                           "C", "A", "B", "C", "A"))
+)
+
+problem2_df
+```
+
+```{r}
+mean(pull(problem2_df, random_sample))
+mean(pull(problem2_df, logical_vector))
+mean(pull(problem2_df, character_vector))
+mean(pull(problem2_df, factor_vector))
+```
+The mean is calculated for the random sample as well as the logical vector. Since the random sample is numerical, its mean can be calculated. The logical vector also has a mean, since R changes TRUE to 1 and FALSE to 0. The character and factor vectors result in NA, because mean can only be calculated on numerical and logical vectors.
+
+```{r, results='hide', warning=FALSE}
+as.numeric(pull(problem2_df, logical_vector))
+as.numeric(pull(problem2_df, character_vector))
+as.numeric(pull(problem2_df, factor_vector))
+```
+Applying as.numeric() to logical vectors changes FALSE to 0 and TRUE to 1. When applied to character vectors, as.numeric() returns a value of NA. This is because the letters are not convertible to numbers. When applied to factor vectors, as.numeric() returns the numeric representation of the factor levels. This means, that for a factor vector with levels A, B, and C, as.numeric() would return 1, 2, and 3 respectively. This helps explain the results above: logical vectors can have a mean because they can be treated as 0s and 1s, while character and factor vectors do not have a meaningful mean directly.
+
